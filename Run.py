@@ -17,7 +17,7 @@ game_board = make_board()
 scores = []
 
 # runs a single instance of a game:
-def run_game(playing, game_board, score):
+def run_game(playing, game_board, score, moves):
     while playing:
         # at the beginning of each turn pick a random square that does not have a 
         # number in it and set it to either 2 or 4
@@ -106,9 +106,9 @@ if param.simulation == True: # if simulation in Parameters.py is True then run n
         playing = True
         game_board = make_board()
         score = 0
-        run_game(playing, game_board, score)
+        run_game(playing, game_board, score, moves)
 else: # otherwise run a single game
-    run_game(playing, game_board, score)
+    run_game(playing, game_board, score, moves)
 
 if param.simulation == True:
     print(time.time() - t)
