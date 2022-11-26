@@ -7,8 +7,6 @@ from Visuals import *
 from Moves import *
 
 playing = True
-gamemodes = ["player","random","down-right-left-up","ai"]
-gamemode = "down-right-left-up"
 score = 0
 moves = ["w","a","s","d"]
 
@@ -39,7 +37,7 @@ def run_game(playing, game_board, score):
                 playing = False
 
         # get user move:
-        if gamemode == "player":
+        if param.gamemode == "player":
             print_board(game_board,score)
             invalid = True
             while invalid:
@@ -61,7 +59,7 @@ def run_game(playing, game_board, score):
                     else:
                         print("invalid input, please enter 'w' or 'a' or 's' or 'd' and press enter")
                 
-        elif gamemode == "random":
+        elif param.gamemode == "random":
             invalid = True
             moves = ["w","a","s","d"]
             while invalid and moves:
@@ -79,7 +77,7 @@ def run_game(playing, game_board, score):
                     
                     invalid = False
             
-        elif gamemode == "down-right-left-up":
+        elif param.gamemode == "down-right-left-up":
             if is_valid("s",game_board) and is_valid("d",game_board):
                 move = random.randint(0,1)
                 if move == 0:
@@ -96,7 +94,7 @@ def run_game(playing, game_board, score):
             elif is_valid("w",game_board):
                 game_board, score = up(game_board,score)
 
-        elif gamemode == "ai":
+        elif param.gamemode == "ai":
             pass
 
 
