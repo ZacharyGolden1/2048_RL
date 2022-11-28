@@ -1,5 +1,6 @@
 import random
 import time
+import argparse
 
 import Parameters as param
 
@@ -33,7 +34,11 @@ def run_game(playing, game_board, score, moves):
             if game_over(game_board):
                 print_board(game_board,score)
                 print("gameover, score:", score)
-                # scores.append(score)
+                scores.append(score)
+                playing = False
+        else:
+            if game_over(game_board):
+                scores.append(score)
                 playing = False
 
         # get user move:
@@ -111,5 +116,5 @@ else: # otherwise run a single game
     run_game(playing, game_board, score, moves)
 
 if param.simulation == True:
-    print(time.time() - t)
-    print(sum(scores)/len(scores), max(scores))
+    print("time in seconds:",time.time() - t)
+    print("Mean:",sum(scores)/len(scores),"Max:", max(scores))
