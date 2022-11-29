@@ -3,27 +3,37 @@ import Moves
 
 class environment():
     action_space = ["w","a","s","d"]
-    observation_space = np.zeros(16)
+    game_board = Moves.make_board()
+    score = 0
     
-    def __init__ (self, board = np.zeros((4,4))):
-        self.observation_space = board.flatten()
+    def __init__ (self, board = np.zeros((4,4),dtype=int),actions = ["w","a","s","d"]):
+        self.game_board = board
+        self.action_space = actions
 
     def _seed ():
         pass
 
-    def _step(move):
-        if Moves.is_valid(move,game_board):
+    def step(self,move):
+        if Moves.is_valid(move,self.game_board):
+            cur_score = self.score
             if move == "w":
-                game_board, score = Moves.up(game_board,score)
+                self.game_board, self.score = Moves.up(self.game_board,self.score)
             elif move == "a":
-                game_board, score = Moves.left(game_board,score)
+                self.game_board, self.score = Moves.left(self.game_board,self.score)
             elif move == "s":
-                game_board, score = Moves.down(game_board,score)
+                self.game_board, self.score = Moves.down(self.game_board,self.score)
             elif move == "d":
-                game_board, score = Moves.right(game_board,score)
+                self.game_board, self.score = Moves.right(self.game_board,self.score)
+            
+            if not Moves.game_over(self.game_board):
+                return self.game_board, self.score-cur_score, False
+            else:
+                return self.game_board, self.score-cur_score, True
+        else:
+            raise Exception("invalid move")
 
-    def _reset():
-        return Moves.make_board()
+    def reset(self):
+        return environment()
 
 def create_environment():
     return environment()

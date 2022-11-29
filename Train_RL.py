@@ -50,17 +50,19 @@ epsilon_greedy_frames = 1000000.0
 # Maximum replay length
 # Note: The Deepmind paper suggests 1000000 however this causes memory issues
 max_memory_length = 100000
-# Train the model after 4 actions
-update_after_actions = 4
+# Train the model after each action
+update_after_actions = 1
 # How often to update the target network
 update_target_network = 10000
 # Using huber loss for stability
 loss_function = keras.losses.Huber()
 
+cnt = 0
 while True:  # Run until solved
     state = env.reset()
-    episode_reward = 0
-
+    episode_reward = 0 
+    print("cnt:",cnt)
+    cnt+=1
     for timestep in range(1, max_steps_per_episode):
         # env.render(); Adding this line would show the attempts
         # of the agent in a pop up window.
@@ -84,7 +86,7 @@ while True:  # Run until solved
         epsilon = max(epsilon, epsilon_min)
 
         # Apply the sampled action in our environment
-        state_next, reward, done, _ = env.step(action) #!!
+        state_next, reward, done = env.step(action) 
 
         episode_reward += reward
 
