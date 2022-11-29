@@ -24,3 +24,6 @@ class environment():
 
     def _reset():
         return Moves.make_board()
+
+def create_environment():
+    return environment()
