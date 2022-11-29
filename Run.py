@@ -27,7 +27,7 @@ def run_game(playing, game_board, score, moves):
             random_square = get_random_empty_square(empty_squares)
         except:
             pass
-        game_board[random_square[0]][random_square[1]] = random.choice([2,4])
+        game_board[random_square[0],random_square[1]] = random.choice([2,4])
 
         # check to see if the game is still playable:
         if param.verbose:

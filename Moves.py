@@ -1,10 +1,9 @@
 import random
+import numpy as np
 
 # create board:
 def make_board():
-    board = dict()
-    for i in range(4):
-        board[i] = [None, None, None, None]
+    board = np.zeros((4,4))
     return board
 
 # get all empty squares:
@@ -12,7 +11,7 @@ def get_empty_squares(board):
     empty_squares = []
     for i in range(4):
         for j in range(4):
-            if board[i][j] == None:
+            if board[i,j] == 0:
                 empty_squares.append((i,j))
     return empty_squares
 
@@ -23,13 +22,13 @@ def get_random_empty_square(empty_squares):
 
 # moves
 def up(board,score):
-    # get rid of all Nones in the board
+    # get rid of all zeroes in the board
     new_board = dict()
     for col in range(4):
         new_board[col] = []
         for row in range(4):
-            if board[row][col] != None:
-                new_board[col].append(board[row][col])
+            if board[row,col] != 0:
+                new_board[col].append(board[row,col])
                 
     # combine like numbers:
     for col in range(4):
@@ -41,27 +40,27 @@ def up(board,score):
                 new_board[col].pop(i+1)
             i+=1
 
-    # add back Nones:
+    # add back zeroes:
     for col in range(4):
         while len(new_board[col]) < 4:
-            new_board[col].append(None)
+            new_board[col].append(0)
 
     # transpose
     final_board = make_board()
     for i in range(4):
         for j in range(4):
-            final_board[i][j] = new_board[j][i]
+            final_board[i,j] = new_board[j][i]
 
     return final_board,score
 
 def down(board,score):
-    # get rid of all Nones in the board
+    # get rid of all zeros in the board
     new_board = dict()
     for col in range(4):
         new_board[col] = []
         for row in range(4):
-            if board[row][col] != None:
-                new_board[col].append(board[row][col])
+            if board[row,col] != 0:
+                new_board[col].append(board[row,col])
                 
     # combine like numbers:
     for row in range(4):
@@ -73,26 +72,26 @@ def down(board,score):
                 new_board[row].pop(i-1)
             i-=1
 
-    # add back Nones:
+    # add back zeros:
     for col in range(4):
         while len(new_board[col]) < 4:
-            new_board[col].insert(0, None)
+            new_board[col].insert(0, 0)
 
     # transpose
     final_board = make_board()
     for i in range(4):
         for j in range(4):
-            final_board[i][j] = new_board[j][i]
+            final_board[i,j] = new_board[j][i]
 
     return final_board, score
 
 def left(board,score):
-    # get rid of all Nones in the board
+    # get rid of all zeroes in the board
     new_board = dict()
     for row in range(4):
         new_board[row] = []
         for col in range(4):
-            if board[row][col] != None:
+            if board[row,col] != 0:
                 new_board[row].append(board[row][col])
                 
     # combine like numbers:
@@ -105,12 +104,18 @@ def left(board,score):
                 new_board[row].pop(i+1)
             i+=1
 
-    # add back Nones:
+    # add back zeroes:
     for row in range(4):
         while len(new_board[row]) < 4:
-            new_board[row].append(None)
+            new_board[row].append(0)
     
-    return new_board, score
+    # make into a np.array
+    final_board = make_board()
+    for i in range(4):
+        for j in range(4):
+            final_board[i,j] = new_board[i][j]
+    
+    return final_board, score
 
 def right(board,score):
     # get rid of all Nones in the board
@@ -118,8 +123,8 @@ def right(board,score):
     for row in range(4):
         new_board[row] = []
         for col in range(4):
-            if board[row][col] != None:
-                new_board[row].append(board[row][col])
+            if board[row][col] != 0:
+                new_board[row].append(board[row,col])
                 
     # combine like numbers:
     for row in range(4):
@@ -131,12 +136,18 @@ def right(board,score):
                 new_board[row].pop(i-1)
             i-=1
 
-    # add back Nones:
+    # add back Zeroes:
     for row in range(4):
         while len(new_board[row]) < 4:
-            new_board[row].insert(0, None)
+            new_board[row].insert(0, 0)
     
-    return new_board, score
+    # make into a np.array
+    final_board = make_board()
+    for i in range(4):
+        for j in range(4):
+            final_board[i,j] = new_board[i][j]
+    
+    return final_board, score
 
 # check if a move is valid:
 def is_valid(move,board):
@@ -144,36 +155,36 @@ def is_valid(move,board):
     if move == "a":
         for row in range(4):
             for col in range(3):
-                if board[row][col] == board[row][col+1] and board[row][col+1] != None:
+                if board[row,col] == board[row,col+1] and board[row,col+1] != 0:
                     return True
-                elif board[row][col] == None and board[row][col+1] != None:
+                elif board[row,col] == 0 and board[row,col+1] != 0:
                     return True
 
     # right
     elif move == "d":
         for row in range(4):
             for col in range(3,0,-1):
-                if board[row][col] == board[row][col-1] and board[row][col-1] != None:
+                if board[row,col] == board[row,col-1] and board[row,col-1] != 0:
                     return True
-                elif board[row][col] == None and board[row][col-1] != None:
+                elif board[row,col] == 0 and board[row,col-1] != 0:
                     return True
     
     # down
     elif move == "s":
         for col in range(4):
             for row in range(3,0,-1):
-                if board[row][col] == board[row-1][col] and board[row-1][col] != None:
+                if board[row,col] == board[row-1,col] and board[row-1,col] != 0:
                     return True
-                elif board[row][col] == None and board[row-1][col] != None:
+                elif board[row,col] == 0 and board[row-1,col] != 0:
                     return True
 
     # up
     elif move == "w":
         for col in range(4):
             for row in range(3):
-                if board[row][col] == board[row+1][col] and board[row+1][col] != None:
+                if board[row,col] == board[row+1,col] and board[row+1,col] != 0:
                     return True
-                elif board[row][col] == None and board[row+1][col] != None:
+                elif board[row,col] == 0 and board[row+1,col] != 0:
                     return True
     return False
 
