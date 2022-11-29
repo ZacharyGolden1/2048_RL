@@ -116,5 +116,5 @@ else: # otherwise run a single game
     run_game(playing, game_board, score, moves)
 
 if param.simulation == True:
-    print("time in seconds:",time.time() - t)
+    print("Time:",time.time() - t,"(s)")
     print("Mean:",sum(scores)/len(scores),"Max:", max(scores))
