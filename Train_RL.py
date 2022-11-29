@@ -58,7 +58,7 @@ update_target_network = 10000
 loss_function = keras.losses.Huber()
 
 while True:  # Run until solved
-    state = np.array(env.reset())
+    state = env.reset()
     episode_reward = 0
 
     for timestep in range(1, max_steps_per_episode):
@@ -84,8 +84,7 @@ while True:  # Run until solved
         epsilon = max(epsilon, epsilon_min)
 
         # Apply the sampled action in our environment
-        state_next, reward, done, _ = env.step(action)
-        state_next = np.array(state_next)
+        state_next, reward, done, _ = env.step(action) #!!
 
         episode_reward += reward
 
