@@ -7,7 +7,7 @@ from Parameters import *
 
 def create_q_model():
     # Network defined by the Deepmind paper
-    inputs = layers.Input(shape=(16,1))
+    inputs = layers.Input(shape=(32,16))
 
     layer1 = layers.Dense(512, activation="relu")(inputs)
     action = layers.Dense(4, activation="linear")(layer1)

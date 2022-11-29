@@ -57,12 +57,9 @@ update_target_network = 10000
 # Using huber loss for stability
 loss_function = keras.losses.Huber()
 
-cnt = 0
 while True:  # Run until solved
     state = env.reset()
     episode_reward = 0 
-    print("cnt:",cnt)
-    cnt+=1
     for timestep in range(1, max_steps_per_episode):
         # env.render(); Adding this line would show the attempts
         # of the agent in a pop up window.
@@ -115,10 +112,15 @@ while True:  # Run until solved
 
             # Build the updated Q-values for the sampled future states
             # Use the target model for stability
+            state_next_sample = np.reshape(state_next_sample, (32,16))
+            state_next_sample = tf.expand_dims(state_next_sample, 0)
+
             future_rewards = model_target.predict(state_next_sample)
             # Q value = reward + discount factor * expected future reward
+            # print(rewards_sample)
+            # print(future_rewards)
             updated_q_values = rewards_sample + gamma * tf.reduce_max(
-                future_rewards, axis=1
+                future_rewards, axis=0
             )
 
             # If final frame set the last value to -1

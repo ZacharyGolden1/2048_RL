@@ -52,7 +52,8 @@ class environment():
         return environment()
     
     def get_actions(self):
-        print("get_actions",self.action_space,self.num_actions,"\n", self.game_board)
+        # debug output
+        # print("get_actions",self.action_space,self.num_actions,"\n", self.game_board)
         return self.num_actions
 
 def create_environment():
