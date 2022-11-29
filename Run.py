@@ -20,15 +20,6 @@ scores = []
 # runs a single instance of a game:
 def run_game(playing, game_board, score, moves):
     while playing:
-        # at the beginning of each turn pick a random square that does not have a 
-        # number in it and set it to either 2 or 4
-        empty_squares = get_empty_squares(game_board)
-        try:
-            random_square = get_random_empty_square(empty_squares)
-        except:
-            pass
-        game_board[random_square[0],random_square[1]] = random.choice([2,4])
-
         # check to see if the game is still playable:
         if param.verbose:
             if game_over(game_board):

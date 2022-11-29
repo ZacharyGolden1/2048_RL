@@ -4,6 +4,14 @@ import numpy as np
 # create board:
 def make_board():
     board = np.zeros((4,4),dtype=int)
+
+    empty_squares = get_empty_squares(board)
+    (x,y) = get_random_empty_square(empty_squares)
+    board[x,y] = random.choice([2,4])
+
+    empty_squares = get_empty_squares(board)
+    (x,y) = get_random_empty_square(empty_squares)
+    board[x,y] = random.choice([2,4])
     return board
 
 # get all empty squares:
@@ -51,6 +59,15 @@ def up(board,score):
         for j in range(4):
             final_board[i,j] = new_board[j][i]
 
+    # at the beginning of each turn pick a random square that does not have a 
+    # number in it and set it to either 2 or 4
+    empty_squares = get_empty_squares(final_board)
+    try:
+        (x,y) = get_random_empty_square(empty_squares)
+    except:
+        pass
+    final_board[x,y] = random.choice([2,4])
+
     return final_board,score
 
 def down(board,score):
@@ -82,6 +99,15 @@ def down(board,score):
     for i in range(4):
         for j in range(4):
             final_board[i,j] = new_board[j][i]
+
+    # at the beginning of each turn pick a random square that does not have a 
+    # number in it and set it to either 2 or 4
+    empty_squares = get_empty_squares(final_board)
+    try:
+        (x,y) = get_random_empty_square(empty_squares)
+    except:
+        pass
+    final_board[x,y] = random.choice([2,4])
 
     return final_board, score
 
@@ -115,6 +141,15 @@ def left(board,score):
         for j in range(4):
             final_board[i,j] = new_board[i][j]
     
+    # at the beginning of each turn pick a random square that does not have a 
+    # number in it and set it to either 2 or 4
+    empty_squares = get_empty_squares(final_board)
+    try:
+        (x,y) = get_random_empty_square(empty_squares)
+    except:
+        pass
+    final_board[x,y] = random.choice([2,4])
+
     return final_board, score
 
 def right(board,score):
@@ -147,6 +182,15 @@ def right(board,score):
         for j in range(4):
             final_board[i,j] = new_board[i][j]
     
+    # at the beginning of each turn pick a random square that does not have a 
+    # number in it and set it to either 2 or 4
+    empty_squares = get_empty_squares(final_board)
+    try:
+        (x,y) = get_random_empty_square(empty_squares)
+    except:
+        pass
+    final_board[x,y] = random.choice([2,4])
+
     return final_board, score
 
 # check if a move is valid:
