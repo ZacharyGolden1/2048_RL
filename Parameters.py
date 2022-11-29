@@ -1,6 +1,5 @@
 verbose = True
-simulation = True
-num_simulations = 100
+simulation = False
+num_simulations = 1000
 # possible gamemodes ==> ["player","random","down-right-left-up","ai"]
-gamemode = "random"
-num_actions = 4
+gamemode = "player"

@@ -71,7 +71,7 @@ while True:  # Run until solved
         # Use epsilon-greedy for exploration
         if frame_count < epsilon_random_frames or epsilon > np.random.rand(1)[0]:
             # Take random action
-            action = np.random.choice(num_actions)
+            action = np.random.choice(env.get_actions())
         else:
             # Predict action Q-values
             # From environment state
@@ -125,7 +125,7 @@ while True:  # Run until solved
             updated_q_values = updated_q_values * (1 - done_sample) - done_sample
 
             # Create a mask so we only calculate loss on the updated Q-values
-            masks = tf.one_hot(action_sample, num_actions)
+            masks = tf.one_hot(action_sample, env.get_actions())
 
             with tf.GradientTape() as tape:
                 # Train the model on the states and updated Q-values
