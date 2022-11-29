@@ -3,7 +3,7 @@ import numpy as np
 
 # create board:
 def make_board():
-    board = np.zeros((4,4))
+    board = np.zeros((4,4),dtype=int)
     return board
 
 # get all empty squares:
