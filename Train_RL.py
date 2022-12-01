@@ -113,32 +113,21 @@ while True:  # Run until solved
             )
 
             # Build the updated Q-values for the sampled future states
-            # Use the target model for stability
-            # TODO: please for the love of god fix this. I don't know why, but for some reason half the time state sample is a proper np array and half the time it acts like one but has the wrong shape and doesnt format well on prints. This is a bad solution, help me oh please god help.
-            # this is a bodged together band-aid to try and solve that issue, not a perminent solution
-            if (np.shape(state_sample.shape))[0] < 3:
-                print(state_sample.flatten())
-                state_sample = np.reshape(state_sample.flatten(),(32,4,4))
-                
-            print("State dims:",state_sample.shape)
-            print("State dims:",type(state_sample))
-
             future_rewards = model_target.predict(state_next_sample,batch_size=batch_size)
-
-            print("future rewards dims:",future_rewards.shape)
 
             # Q value = reward + discount factor * expected future reward
             # print(rewards_sample)
             # print(np.shape(future_rewards))
             updated_q_values = rewards_sample + gamma * tf.reduce_max(
-                future_rewards, axis=(1,2)
+                future_rewards, axis=1
             )
 
             # If final frame set the last value to -1
             updated_q_values = updated_q_values * (1 - done_sample) - done_sample
 
             # Create a mask so we only calculate loss on the updated Q-values
-            masks = tf.one_hot(action_sample, env.get_actions())
+            masks = tf.one_hot(action_sample, 4)
+            # print("action_sample")
 
             with tf.GradientTape() as tape:
                 # Train the model on the states and updated Q-values
@@ -146,14 +135,14 @@ while True:  # Run until solved
                 # but when I check the actual array it is an array of game boards
                 # each with size (4,4) idk. Could be fixed with a for loop but 
                 # that seems sussy
-                print("state_sample shape",np.shape(state_sample),"\n")
-                print("state_sample",np.asarray(state_sample),"\n")
-                print("state_sample type ",type(state_sample),"\n")
+                # print("state_sample shape",np.shape(state_sample),"\n")
+                # print("state_sample",np.asarray(state_sample),"\n")
+                # print("state_sample type ",type(state_sample),"\n")
                  
                 # print(np.shape(state_sample))
                 q_values = model(state_sample)
                
-
+                # print("q_values",q_values[0],"\n","masks",masks.shape)
                 # Apply the masks to the Q-values to get the Q-value for action taken
                 q_action = tf.reduce_sum(tf.multiply(q_values, masks), axis=1)
                 # Calculate loss between new Q-value and old Q-value

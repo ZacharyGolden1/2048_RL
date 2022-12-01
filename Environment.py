@@ -42,9 +42,9 @@ class environment():
             # print("act",self.action_space)
 
             if not Moves.game_over(self.game_board):
-                return self.game_board, self.score-cur_score, False
+                return self.game_board.flatten(), self.score-cur_score, False
             else:
-                return self.game_board, self.score-cur_score, True
+                return self.game_board.flatten(), self.score-cur_score, True
         else:
             raise Exception(f"invalid move {move}")
 
@@ -53,7 +53,7 @@ class environment():
         self.game_board = Moves.make_board()
         self.score = 0
         self.num_actions = 4
-        return self.game_board
+        return self.game_board.flatten()
     
     def get_actions(self):
         # debug output
