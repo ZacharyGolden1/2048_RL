@@ -7,9 +7,9 @@ from Parameters import *
 
 def create_q_model():
     # Network defined by the Deepmind paper
-    inputs = layers.Input(shape=(32,16))
+    inputs = layers.Input(shape=(4,4))
 
     layer1 = layers.Dense(512, activation="relu")(inputs)
-    action = layers.Dense(4, activation="linear")(layer1)
+    action = layers.Dense(4, activation="softmax")(layer1)
 
     return keras.Model(inputs=inputs, outputs=action)

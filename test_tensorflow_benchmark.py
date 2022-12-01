@@ -1,3 +1,4 @@
+# This function is intended to benchmark differnet machines tensorflow 
 import tensorflow as tf
 import tensorflow_datasets as tfds
 

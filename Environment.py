@@ -49,7 +49,11 @@ class environment():
             raise Exception(f"invalid move {move}")
 
     def reset(self):
-        return environment()
+        self.action_space = ["w","a","s","d"]
+        self.game_board = Moves.make_board()
+        self.score = 0
+        self.num_actions = 4
+        return self.game_board
     
     def get_actions(self):
         # debug output

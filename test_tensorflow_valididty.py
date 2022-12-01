@@ -1,3 +1,5 @@
+# This function is written to help users ensure that their tensorflow installations are correct
+# ans sufficent for the 2048 RL run.
 print("Testing Tensorflow Validity", flush = True)
 import tensorflow as tf
 
