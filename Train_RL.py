@@ -112,15 +112,15 @@ while True:  # Run until solved
 
             # Build the updated Q-values for the sampled future states
             # Use the target model for stability
-            state_next_sample = np.reshape(state_next_sample, (32,16))
+            state_next_sample = np.reshape(state_next_sample, (batch_size,16))
             state_next_sample = tf.expand_dims(state_next_sample, 0)
 
             future_rewards = model_target.predict(state_next_sample)
             # Q value = reward + discount factor * expected future reward
             # print(rewards_sample)
-            # print(future_rewards)
+            # print(np.shape(future_rewards))
             updated_q_values = rewards_sample + gamma * tf.reduce_max(
-                future_rewards, axis=0
+                future_rewards, axis=2
             )
 
             # If final frame set the last value to -1
@@ -131,6 +131,14 @@ while True:  # Run until solved
 
             with tf.GradientTape() as tape:
                 # Train the model on the states and updated Q-values
+                # weird problem here where the array comes in as a size (32,)
+                # but when I check the actual array it is an array of game boards
+                # each with size (4,4) idk. Could be fixed with a for loop but 
+                # that seems sussy
+                print(np.shape(state_sample[0]))
+                state_sample = np.reshape(state_sample, (batch_size,16))
+                state_sample = tf.expand_dims(state_sample, 0)
+                # print(np.shape(state_sample))
                 q_values = model(state_sample)
 
                 # Apply the masks to the Q-values to get the Q-value for action taken
