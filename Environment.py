@@ -46,7 +46,7 @@ class environment():
             else:
                 return self.game_board.flatten(), self.score-cur_score, True
         else:
-            raise Exception(f"invalid move {move}")
+            raise Exception(f"invalid move {move} in board state:\n {self.game_board}")
 
     def reset(self):
         self.action_space = ["w","a","s","d"]
