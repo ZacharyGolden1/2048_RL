@@ -2,18 +2,14 @@ import numpy as np
 import Moves
 
 class environment():
-    action_space = ["w","a","s","d"]
     game_board = Moves.make_board()
+    action_space = Moves.get_moves(game_board)
     score = 0
     num_actions = 4
     
     def __init__ (self, board = Moves.make_board()):
         self.game_board = board
-        moves = []
-        for move in ["w","a","s","d"]:
-            if Moves.is_valid(move,self.game_board):
-                moves.append(move)
-        self.action_space = moves
+        self.action_space = Moves.get_moves(self.game_board)
         self.num_actions = len(self.action_space)
 
     def _seed ():
@@ -46,7 +42,7 @@ class environment():
             else:
                 return self.game_board.flatten(), self.score-cur_score, True
         else:
-            raise Exception(f"invalid move {move} in board state:\n {self.game_board}")
+            raise Exception(f"invalid move {move}")
 
     def reset(self):
         self.action_space = ["w","a","s","d"]
@@ -55,6 +51,9 @@ class environment():
         self.num_actions = 4
         return self.game_board.flatten()
     
+    def get_action_space(self):
+        return self.action_space
+
     def get_actions(self):
         # debug output
         # print("get_actions",self.action_space,self.num_actions,"\n", self.game_board)

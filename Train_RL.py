@@ -67,10 +67,16 @@ while True:  # Run until solved
         frame_count += 1
 
         # Use epsilon-greedy for exploration
+        random_or_policy = None
         if frame_count < epsilon_random_frames or epsilon > np.random.rand(1)[0]:
             # Take random action
-            action = np.random.choice(env.get_actions())
+            random_action = np.random.choice(env.get_action_space())
+            possible_actions = env.get_action_space()
+
+            action = possible_actions.index(random_action)
+            random_or_policy = "random"
         else:
+            random_or_policy = "policy"
             # Predict action Q-values
             # From environment state
             state_tensor = tf.convert_to_tensor(state)
@@ -84,7 +90,10 @@ while True:  # Run until solved
         epsilon = max(epsilon, epsilon_min)
 
         # Apply the sampled action in our environment
-        state_next, reward, done = env.step(action) 
+        try:
+            state_next, reward, done = env.step(action) 
+        except:
+            print(random_or_policy)
 
         episode_reward += reward
 
@@ -131,15 +140,6 @@ while True:  # Run until solved
 
             with tf.GradientTape() as tape:
                 # Train the model on the states and updated Q-values
-                # TODO: weird problem here where the array comes in as a size (32,)
-                # but when I check the actual array it is an array of game boards
-                # each with size (4,4) idk. Could be fixed with a for loop but 
-                # that seems sussy
-                # print("state_sample shape",np.shape(state_sample),"\n")
-                # print("state_sample",np.asarray(state_sample),"\n")
-                # print("state_sample type ",type(state_sample),"\n")
-                 
-                # print(np.shape(state_sample))
                 q_values = model(state_sample)
                
                 # print("q_values",q_values[0],"\n","masks",masks.shape)
@@ -155,6 +155,8 @@ while True:  # Run until solved
         if frame_count % update_target_network == 0:
             # update the the target network with new weights
             model_target.set_weights(model.get_weights())
+            weights = np.array(model.get_weights())
+            # np.savetxt('data.csv', weights, delimiter=',')
             # Log details
             template = "running reward: {:.2f} at episode {}, frame count {}"
             print(template.format(running_reward, episode_count, frame_count))

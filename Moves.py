@@ -232,6 +232,14 @@ def is_valid(move,board):
                     return True
     return False
 
+# get all valid moves on current board:
+def get_moves(board):
+    moves = []
+    for move in ["w","a","s","d"]:
+        if is_valid(move,board):
+            moves.append(move)
+    return moves
+
 # check if the game is over:
 def game_over(board):
     moves = ["w","a","s","d"]
