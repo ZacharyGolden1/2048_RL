@@ -1,5 +1,6 @@
 import numpy as np
 import Moves
+import tensorflow as tf
 
 class environment():
     game_board = Moves.make_board()
@@ -56,6 +57,7 @@ class environment():
         return self.num_actions
 
     def clip_action_probs(self,possible_actions,action_probs):
+        action_probs = np.array(action_probs)
         if 'd' not in possible_actions:
             action_probs[3] = 0
         if 's' not in possible_actions:
@@ -64,6 +66,7 @@ class environment():
             action_probs[1] = 0
         if 'w' not in possible_actions:
             action_probs[0] = 0
+        action_probs = tf.convert_to_tensor(action_probs)
         return action_probs
 
 def create_environment():
