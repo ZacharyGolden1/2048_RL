@@ -71,16 +71,13 @@ while True:  # Run until solved
         frame_count += 1
 
         # Use epsilon-greedy for exploration
-        random_or_policy = None
         if frame_count < epsilon_random_frames or epsilon > np.random.rand(1)[0]:
             # Take random action
             random_action = np.random.choice(env.get_action_space())
             possible_actions = env.get_action_space()
 
             action = possible_actions.index(random_action)
-            random_or_policy = "random"
         else:
-            random_or_policy = "policy"
             # Predict action Q-values
             # From environment state
             state_tensor = tf.convert_to_tensor(state)
@@ -94,10 +91,7 @@ while True:  # Run until solved
         epsilon = max(epsilon, epsilon_min)
 
         # Apply the sampled action in our environment
-        try:
-            state_next, reward, done = env.step(action) 
-        except:
-            print(random_or_policy)
+        state_next, reward, done = env.step(action) 
 
         episode_reward += reward
 
