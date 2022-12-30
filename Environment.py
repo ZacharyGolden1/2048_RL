@@ -57,7 +57,7 @@ class environment():
         return self.num_actions
 
     def clip_action_probs(self,possible_actions,action_probs):
-        action_probs = np.array(action_probs)
+        action_probs = np.array(action_probs[0])
         if 'd' not in possible_actions:
             action_probs[3] = 0
         if 's' not in possible_actions:
