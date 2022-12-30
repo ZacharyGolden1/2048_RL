@@ -59,13 +59,13 @@ class environment():
     def clip_action_probs(self,possible_actions,action_probs):
         action_probs = np.array(action_probs[0])
         if 'd' not in possible_actions:
-            action_probs[3] = 0
+            action_probs.pop(3)
         if 's' not in possible_actions:
-            action_probs[2] = 0
+            action_probs.pop(2)
         if 'a' not in possible_actions:
-            action_probs[1] = 0
+            action_probs.pop(1)
         if 'w' not in possible_actions:
-            action_probs[0] = 0
+            action_probs.pop(0)
         return action_probs
 
 def create_environment():
