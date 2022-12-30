@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf
+import time
 from tensorflow import keras
 from keras import layers
 from Environment import *
@@ -12,4 +13,10 @@ def create_q_model():
     layer1 = layers.Dense(512, activation="relu")(inputs)
     action = layers.Dense(4, activation="softmax")(layer1)
 
-    return keras.Model(inputs=inputs, outputs=action)
+    return keras.Model(inputs=inputs, outputs=action, )
+
+def save_model(model,path=model_save_path):
+    model.save(path+time.gmtime())
+
+def load_model(path=default_model):
+    return keras.models.load_model(path)

@@ -24,7 +24,11 @@ env = create_environment()
 
 # The first model makes the predictions for Q-values which are used to
 # make a action.
-model = create_q_model()
+if default_model == "":
+    model = create_q_model()
+else:
+    model = load_model()
+
 # Build a target model for the prediction of future rewards.
 # The weights of a target model get updated every 10000 steps thus when the
 # loss between the Q-values is calculated the target Q-value is stable.
@@ -183,3 +187,5 @@ while True:  # Run until solved
     if running_reward > 20000:  # Condition to consider the task solved
         print("Solved at episode {}!".format(episode_count))
         break
+
+save_model(model)
