@@ -6,6 +6,10 @@ from keras import layers
 from Environment import *
 from Parameters import *
 from Model import *
+from Disable_Print import *
+
+# Disable Printing So we avoid the 1/1 [=======.. output
+blockPrint()
 
 # Configuration paramaters for the whole setup
 
@@ -157,7 +161,9 @@ while True:  # Run until solved
             # np.savetxt('data.csv', weights, delimiter=',')
             # Log details
             template = "running reward: {:.2f} at episode {}, frame count {}"
+            enablePrint()
             print(template.format(running_reward, episode_count, frame_count))
+            blockPrint()
 
         # Limit the state and reward history
         if len(rewards_history) > max_memory_length:
@@ -166,6 +172,11 @@ while True:  # Run until solved
             del state_next_history[:1]
             del action_history[:1]
             del done_history[:1]
+
+        if frame_count % 1000 == 0:
+            enablePrint()
+            print("Frame = " + {frame_count})
+            blockPrint()
 
         if done:
             break
@@ -179,7 +190,9 @@ while True:  # Run until solved
     episode_count += 1
 
     if running_reward > 20000:  # Condition to consider the task solved
+        enablePrint()
         print("Solved at episode {}!".format(episode_count))
+        blockPrint()
         break
 
 save_model(model)
