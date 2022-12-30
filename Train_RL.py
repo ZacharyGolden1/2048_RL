@@ -175,7 +175,7 @@ while True:  # Run until solved
 
         if frame_count % 1000 == 0:
             enablePrint()
-            print("Frame={}!".format(frame_count))
+            print("Frame= {}".format(frame_count))
             blockPrint()
 
         if done:
