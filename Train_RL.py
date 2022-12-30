@@ -101,10 +101,11 @@ while True:  # Run until solved
         try:
             state_next, reward, done = env.step(action) 
         except:
+            enablePrint()
             print(action)
             print(action_probs)
             print(possible_actions)
-            print(time.time()-initial_time)
+            blockPrint()
 
         episode_reward += reward
 
@@ -169,9 +170,9 @@ while True:  # Run until solved
             weights = np.array(model.get_weights())
             # np.savetxt('data.csv', weights, delimiter=',')
             # Log details
-            template = "running reward: {:.2f} at episode {}, frame count {}"
+            template = "running reward: {:.2f} at episode {}, frame count {}, time {}"
             enablePrint()
-            print(template.format(running_reward, episode_count, frame_count))
+            print(template.format(running_reward, episode_count, frame_count, time.time()-initial_time))
             blockPrint()
 
         # Limit the state and reward history
