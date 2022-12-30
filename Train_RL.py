@@ -87,6 +87,8 @@ while True:  # Run until solved
             state_tensor = tf.convert_to_tensor(state)
             state_tensor = tf.expand_dims(state_tensor, 0)
             action_probs = model(state_tensor, training=False)
+            possible_actions = env.get_action_space()
+            action_probs = env.clip_action_probs(possible_actions,action_probs)
             # Take best action
             action = tf.argmax(action_probs[0]).numpy()
 

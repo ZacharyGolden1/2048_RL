@@ -55,5 +55,16 @@ class environment():
         # print("get_actions",self.action_space,self.num_actions,"\n", self.game_board)
         return self.num_actions
 
+    def clip_action_probs(self,possible_actions,action_probs):
+        if 'd' not in possible_actions:
+            action_probs[3] = 0
+        if 's' not in possible_actions:
+            action_probs[2] = 0
+        if 'a' not in possible_actions:
+            action_probs[1] = 0
+        if 'w' not in possible_actions:
+            action_probs[0] = 0
+        return action_probs
+
 def create_environment():
     return environment()
