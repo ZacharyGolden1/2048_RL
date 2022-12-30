@@ -97,7 +97,12 @@ while True:  # Run until solved
         epsilon = max(epsilon, epsilon_min)
 
         # Apply the sampled action in our environment
-        state_next, reward, done = env.step(action) 
+        try:
+            state_next, reward, done = env.step(action) 
+        except:
+            print(action)
+            print(action_probs)
+            print(possible_actions)
 
         episode_reward += reward
 
