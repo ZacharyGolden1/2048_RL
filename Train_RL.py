@@ -104,7 +104,7 @@ while True:  # Run until solved
             print(action)
             print(action_probs)
             print(possible_actions)
-            print(time.time()-inital_time)
+            print(time.time()-initial_time)
 
         episode_reward += reward
 
