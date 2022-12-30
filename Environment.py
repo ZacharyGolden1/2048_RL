@@ -66,7 +66,6 @@ class environment():
             action_probs[1] = 0
         if 'w' not in possible_actions:
             action_probs[0] = 0
-        action_probs = tf.convert_to_tensor(action_probs)
         return action_probs
 
 def create_environment():

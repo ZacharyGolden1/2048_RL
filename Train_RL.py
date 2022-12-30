@@ -90,7 +90,7 @@ while True:  # Run until solved
             possible_actions = env.get_action_space()
             action_probs = env.clip_action_probs(possible_actions,action_probs)
             # Take best action
-            action = tf.argmax(action_probs).numpy()
+            action = np.argmax(action_probs)
 
         # Decay probability of taking random action
         epsilon -= epsilon_interval / epsilon_greedy_frames
