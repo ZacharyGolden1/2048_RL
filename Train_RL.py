@@ -10,6 +10,7 @@ from Disable_Print import *
 
 # Disable Printing So we avoid the 1/1 [=======.. output
 blockPrint()
+initial_time = time.time()
 
 # Configuration paramaters for the whole setup
 
@@ -103,6 +104,7 @@ while True:  # Run until solved
             print(action)
             print(action_probs)
             print(possible_actions)
+            print(time.time()-inital_time)
 
         episode_reward += reward
 
