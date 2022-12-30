@@ -173,10 +173,11 @@ while True:  # Run until solved
             del action_history[:1]
             del done_history[:1]
 
-        if frame_count % 1000 == 0:
-            enablePrint()
-            print("Frame= {}".format(frame_count))
-            blockPrint()
+        # extra output for more visuals
+        # if frame_count % 1000 == 0:
+        #     enablePrint()
+        #     print("Frame= {}".format(frame_count))
+        #     blockPrint()
 
         if done:
             break
