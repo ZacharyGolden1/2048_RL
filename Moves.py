@@ -247,3 +247,13 @@ def game_over(board):
         if is_valid(move,board):
             return False
     return True
+
+# normalize function for the returned model values
+def normalize(arr, t_min, t_max):
+    norm_arr = np.zeros(4)
+    diff = t_max - t_min
+    diff_arr = np.max(arr) - np.min(arr)   
+    for i in arr:
+        temp = (((i - min(arr))*diff)/diff_arr) + t_min
+        norm_arr[i] == temp
+    return norm_arr

@@ -172,7 +172,7 @@ while True:  # Run until solved
             # Log details
             template = "running reward: {:.2f} at episode {}, frame count {}, time {}"
             enablePrint()
-            print(template.format(running_reward, episode_count, frame_count, time.time()-initial_time))
+            print(template.format(running_reward, episode_count, frame_count, (time.time()-initial_time)//60))
             blockPrint()
 
         # Limit the state and reward history

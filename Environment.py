@@ -57,16 +57,18 @@ class environment():
         return self.num_actions
 
     def clip_action_probs(self,possible_actions,action_probs):
-        action_probs = np.array(action_probs[0])
-        if 'd' not in possible_actions:
-            np.delete(action_probs,3)
-        if 's' not in possible_actions:
-            np.delete(action_probs,2)
+        action_probs = Moves.normalize(np.array(action_probs[0]),0,1)
+        n_action_probs = []
+        if 'w' in possible_actions:
+            n_action_probs.append(action_probs[0])
         if 'a' not in possible_actions:
-            np.delete(action_probs,1)
-        if 'w' not in possible_actions:
-            np.delete(action_probs,0)
-        return action_probs
+            n_action_probs.append(action_probs[1])
+        if 's' not in possible_actions:
+            n_action_probs.append(action_probs[2])
+        if 'd' not in possible_actions:
+            n_action_probs.append(action_probs[3])
+        action_probs = np.array(n_action_probs)
+        return Moves.normalize(action_probs,0,1)
 
 def create_environment():
     return environment()
