@@ -108,7 +108,7 @@ while True:  # Run until solved
             enablePrint()
             print(action)
             print(action_probs)
-            print(possible_actions)
+            print(env.get_action_space())
             blockPrint()
 
         episode_reward += reward
