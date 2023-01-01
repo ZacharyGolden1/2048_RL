@@ -110,6 +110,7 @@ while True:  # Run until solved
             print(action_probs)
             print(env.get_action_space())
             blockPrint()
+            state_next, reward, done = env.step(action) 
 
         episode_reward += reward
 
