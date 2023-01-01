@@ -76,7 +76,7 @@ while True:  # Run until solved
         frame_count += 1
 
         # Use epsilon-greedy for exploration
-        if frame_count < 1: #frame_count < epsilon_random_frames or epsilon > np.random.rand(1)[0]:
+        if frame_count < epsilon_random_frames or epsilon > np.random.rand(1)[0]:
             # Take random action
             random_action = np.random.choice(env.get_action_space())
             possible_actions = env.get_action_space()
