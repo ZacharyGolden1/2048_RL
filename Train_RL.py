@@ -95,7 +95,7 @@ while True:  # Run until solved
             action = np.argmax(action_probs)
 
             # reset possible actions so that the indices match up
-            possible_actions = ['w','a','s','d'] 
+            env.action_space = ['w','a','s','d'] 
 
         # Decay probability of taking random action
         epsilon -= epsilon_interval / epsilon_greedy_frames
