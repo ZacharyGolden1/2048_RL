@@ -57,7 +57,7 @@ class environment():
         return self.num_actions
 
     def clip_action_probs(self,possible_actions,action_probs):
-        action_probs = Moves.normalize(np.array(action_probs[0]),0,1)
+        action_probs = Moves.normalize(np.array(action_probs[0]))
         n_action_probs = []
         if 'w' in possible_actions:
             n_action_probs.append(action_probs[0])

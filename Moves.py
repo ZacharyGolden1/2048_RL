@@ -249,11 +249,9 @@ def game_over(board):
     return True
 
 # normalize function for the returned model values
-def normalize(arr, t_min, t_max):
-    norm_arr = np.zeros(4)
-    diff = t_max - t_min
-    diff_arr = np.max(arr) - np.min(arr)   
-    for i in arr:
-        temp = (((i - min(arr))*diff)/diff_arr) + t_min
-        norm_arr[i] == temp
+def normalize(arr):
+    norm_arr = np.zeros(4) 
+    for i in range(len(arr)):
+        temp = arr[i]/np.sum(arr)
+        norm_arr[i] = temp
     return norm_arr
