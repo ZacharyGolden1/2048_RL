@@ -76,7 +76,7 @@ while True:  # Run until solved
         frame_count += 1
 
         # Use epsilon-greedy for exploration
-        if frame_count < epsilon_random_frames or epsilon > np.random.rand(1)[0]:
+        if frame_count < 1: #frame_count < epsilon_random_frames or epsilon > np.random.rand(1)[0]:
             # Take random action
             random_action = np.random.choice(env.get_action_space())
             possible_actions = env.get_action_space()
@@ -90,6 +90,8 @@ while True:  # Run until solved
 
             action_probs = model(state_tensor, training=False)[0]
             possible_actions = env.get_action_space()
+            p_a = env.get_action_space()
+            a_p = action_probs
             action_probs = env.clip_action_probs(possible_actions,action_probs)
             # Take best action
             action = np.argmax(action_probs)
@@ -108,7 +110,8 @@ while True:  # Run until solved
             enablePrint()
             print(action)
             print(action_probs)
-            print(env.get_action_space())
+            print(p_a)
+            print(a_p)
             blockPrint()
             state_next, reward, done = env.step(action) 
 
