@@ -102,15 +102,15 @@ while True:  # Run until solved
         epsilon = max(epsilon, epsilon_min)
 
         # Apply the sampled action in our environment
-        # try:
-        state_next, reward, done = env.step(action) 
-        # except:
-        #     enablePrint()
-        #     print(action)
-        #     print(action_probs)
-        #     print(env.get_action_space())
-        #     blockPrint()
-        #     state_next, reward, done = env.step(action) 
+        try:
+            state_next, reward, done = env.step(action) 
+        except:
+            enablePrint()
+            print(action)
+            print(action_probs)
+            print(env.get_action_space())
+            blockPrint()
+            state_next, reward, done = env.step(action) 
 
         episode_reward += reward
 
