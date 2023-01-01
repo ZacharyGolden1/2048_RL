@@ -76,7 +76,7 @@ while True:  # Run until solved
         frame_count += 1
 
         # Use epsilon-greedy for exploration
-        if False: # frame_count < epsilon_random_frames or epsilon > np.random.rand(1)[0]:
+        if frame_count < epsilon_random_frames or epsilon > np.random.rand(1)[0]:
             # Take random action
             random_action = np.random.choice(env.get_action_space())
             possible_actions = env.get_action_space()
@@ -102,15 +102,15 @@ while True:  # Run until solved
         epsilon = max(epsilon, epsilon_min)
 
         # Apply the sampled action in our environment
-        try:
-            state_next, reward, done = env.step(action) 
-        except:
-            enablePrint()
-            print(action)
-            print(action_probs)
-            print(env.get_action_space())
-            blockPrint()
-            state_next, reward, done = env.step(action) 
+        # try:
+        state_next, reward, done = env.step(action) 
+        # except:
+        #     enablePrint()
+        #     print(action)
+        #     print(action_probs)
+        #     print(env.get_action_space())
+        #     blockPrint()
+        #     state_next, reward, done = env.step(action) 
 
         episode_reward += reward
 
