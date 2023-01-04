@@ -1,0 +1,20 @@
+## This file can be used to create an environment that will install tensorflow on an M1 mac correctly as of Jan 4, 2023
+name: tf-metal
+channels:
+  - apple
+
+dependencies:
+  - python=3.10 
+  - pip
+  - jupyter
+  - apple::tensorflow-deps
+  - conda-forge::pandas
+  - conda-forge::pandas-datareader
+  - conda-forge::scikit-learn
+  - conda-forge::scipy
+  - conda-forge::ipykernel
+
+  ## PyPI packages
+  - pip:
+    - tensorflow-macos
+    - tensorflow-metal  
