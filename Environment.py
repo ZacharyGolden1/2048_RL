@@ -1,11 +1,12 @@
 import numpy as np
 import Moves
+import tensorflow as tf
 
 class environment():
     game_board = Moves.make_board()
     action_space = Moves.get_moves(game_board)
     score = 0
-    num_actions = 4
+    num_actions = len(action_space)
     
     def __init__ (self, board = Moves.make_board()):
         self.game_board = board
@@ -29,11 +30,7 @@ class environment():
                 self.game_board, self.score = Moves.right(self.game_board,self.score)
             
             # update valid moves:
-            moves = []
-            for move in ["w","a","s","d"]:
-                if Moves.is_valid(move,self.game_board):
-                    moves.append(move)
-            self.action_space = moves
+            self.action_space = Moves.get_moves(self.game_board)
             self.num_actions = len(self.action_space)
             # print("act",self.action_space)
 
@@ -45,10 +42,10 @@ class environment():
             raise Exception(f"invalid move {move}")
 
     def reset(self):
-        self.action_space = ["w","a","s","d"]
         self.game_board = Moves.make_board()
+        self.action_space = Moves.get_moves(self.game_board)
         self.score = 0
-        self.num_actions = 4
+        self.num_actions = len(self.action_space)
         return self.game_board.flatten()
     
     def get_action_space(self):
@@ -58,6 +55,18 @@ class environment():
         # debug output
         # print("get_actions",self.action_space,self.num_actions,"\n", self.game_board)
         return self.num_actions
+
+    def clip_action_probs(self,possible_actions,action_probs):
+        action_probs = Moves.normalize(np.array(action_probs))
+        if 'd' not in possible_actions:
+            action_probs[3] = 0
+        if 's' not in possible_actions:
+            action_probs[2] = 0
+        if 'a' not in possible_actions:
+            action_probs[1] = 0
+        if 'w' not in possible_actions:
+            action_probs[0] = 0
+        return Moves.normalize(action_probs)
 
 def create_environment():
     return environment()

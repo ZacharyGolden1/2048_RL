@@ -6,6 +6,11 @@ from keras import layers
 from Environment import *
 from Parameters import *
 from Model import *
+from Disable_Print import *
+
+# Disable Printing So we avoid the 1/1 [=======.. output
+blockPrint()
+initial_time = time.time()
 
 # Configuration paramaters for the whole setup
 
@@ -71,23 +76,28 @@ while True:  # Run until solved
         frame_count += 1
 
         # Use epsilon-greedy for exploration
-        random_or_policy = None
         if frame_count < epsilon_random_frames or epsilon > np.random.rand(1)[0]:
             # Take random action
             random_action = np.random.choice(env.get_action_space())
             possible_actions = env.get_action_space()
 
             action = possible_actions.index(random_action)
-            random_or_policy = "random"
         else:
-            random_or_policy = "policy"
             # Predict action Q-values
             # From environment state
             state_tensor = tf.convert_to_tensor(state)
             state_tensor = tf.expand_dims(state_tensor, 0)
-            action_probs = model(state_tensor, training=False)
+
+            action_probs = model(state_tensor, training=False)[0]
+            possible_actions = env.get_action_space()
+            p_a = env.get_action_space()
+            a_p = action_probs
+            action_probs = env.clip_action_probs(possible_actions,action_probs)
             # Take best action
-            action = tf.argmax(action_probs[0]).numpy()
+            action = np.argmax(action_probs)
+
+            # reset possible actions so that the indices match up
+            env.action_space = ['w','a','s','d'] 
 
         # Decay probability of taking random action
         epsilon -= epsilon_interval / epsilon_greedy_frames
@@ -97,7 +107,13 @@ while True:  # Run until solved
         try:
             state_next, reward, done = env.step(action) 
         except:
-            print(random_or_policy)
+            enablePrint()
+            print(action)
+            print(action_probs)
+            print(p_a)
+            print(a_p)
+            blockPrint()
+            state_next, reward, done = env.step(action) 
 
         episode_reward += reward
 
@@ -162,8 +178,10 @@ while True:  # Run until solved
             weights = np.array(model.get_weights())
             # np.savetxt('data.csv', weights, delimiter=',')
             # Log details
-            template = "running reward: {:.2f} at episode {}, frame count {}"
-            print(template.format(running_reward, episode_count, frame_count))
+            template = "running reward: {:.2f} at episode {}, frame count {}, time {}"
+            enablePrint()
+            print(template.format(running_reward, episode_count, frame_count, (time.time()-initial_time)//60))
+            blockPrint()
 
         # Limit the state and reward history
         if len(rewards_history) > max_memory_length:
@@ -172,6 +190,12 @@ while True:  # Run until solved
             del state_next_history[:1]
             del action_history[:1]
             del done_history[:1]
+
+        # extra output for more visuals
+        # if frame_count % 1000 == 0:
+        #     enablePrint()
+        #     print("Frame= {}".format(frame_count))
+        #     blockPrint()
 
         if done:
             break
@@ -185,7 +209,9 @@ while True:  # Run until solved
     episode_count += 1
 
     if running_reward > 20000:  # Condition to consider the task solved
+        enablePrint()
         print("Solved at episode {}!".format(episode_count))
+        blockPrint()
         break
 
 save_model(model)
