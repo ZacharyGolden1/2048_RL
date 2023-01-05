@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-import time
+import datetime
 from tensorflow import keras
 from keras import layers
 from Environment import *
@@ -16,7 +16,7 @@ def create_q_model():
     return keras.Model(inputs=inputs, outputs=action, )
 
 def save_model(model,path=model_save_path):
-    model.save(path+time.gmtime())
+    model.save(path+str(datetime.datetime.now()))
 
 def load_model(path=default_model):
     return keras.models.load_model(path)

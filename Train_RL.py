@@ -8,6 +8,7 @@ from Parameters import *
 from Model import *
 from Disable_Print import *
 
+print("Starting model training")
 # Disable Printing So we avoid the 1/1 [=======.. output
 blockPrint()
 initial_time = time.time()
@@ -31,13 +32,14 @@ env = create_environment()
 # make a action.
 if default_model == "":
     model = create_q_model()
+
+    # Build a target model for the prediction of future rewards.
+    # The weights of a target model get updated every 10000 steps thus when the
+    # loss between the Q-values is calculated the target Q-value is stable.
+    model_target = create_q_model()
 else:
     model = load_model()
-
-# Build a target model for the prediction of future rewards.
-# The weights of a target model get updated every 10000 steps thus when the
-# loss between the Q-values is calculated the target Q-value is stable.
-model_target = create_q_model()
+    model_target = load_model()
 
 # In the Deepmind paper they use RMSProp however then Adam optimizer
 # improves training time
@@ -61,157 +63,161 @@ epsilon_greedy_frames = 1000000.0
 # Note: The Deepmind paper suggests 1000000 however this causes memory issues
 max_memory_length = 100000
 # Train the model after each action
-update_after_actions = 1
+update_after_actions = 10
 # How often to update the target network
 update_target_network = 10000
 # Using huber loss for stability
 loss_function = keras.losses.Huber()
 
 while True:  # Run until solved
-    state = env.reset()
-    episode_reward = 0 
-    for timestep in range(1, max_steps_per_episode):
-        # env.render(); Adding this line would show the attempts
-        # of the agent in a pop up window.
-        frame_count += 1
+    try: # exception handler to allow for saving on keyboard inturrupt
+        state = env.reset()
+        episode_reward = 0 
+        for timestep in range(1, max_steps_per_episode):
+            # env.render(); Adding this line would show the attempts
+            # of the agent in a pop up window.
+            frame_count += 1
 
-        # Use epsilon-greedy for exploration
-        if frame_count < epsilon_random_frames or epsilon > np.random.rand(1)[0]:
-            # Take random action
-            random_action = np.random.choice(env.get_action_space())
-            possible_actions = env.get_action_space()
+            # Use epsilon-greedy for exploration
+            if frame_count < epsilon_random_frames or epsilon > np.random.rand(1)[0]:
+                # Take random action
+                random_action = np.random.choice(env.get_action_space())
+                possible_actions = env.get_action_space()
 
-            action = possible_actions.index(random_action)
-        else:
-            # Predict action Q-values
-            # From environment state
-            state_tensor = tf.convert_to_tensor(state)
-            state_tensor = tf.expand_dims(state_tensor, 0)
+                action = possible_actions.index(random_action)
+            else:
+                # Predict action Q-values
+                # From environment state
+                state_tensor = tf.convert_to_tensor(state)
+                state_tensor = tf.expand_dims(state_tensor, 0)
 
-            action_probs = model(state_tensor, training=False)[0]
-            possible_actions = env.get_action_space()
-            p_a = env.get_action_space()
-            a_p = action_probs
-            action_probs = env.clip_action_probs(possible_actions,action_probs)
-            # Take best action
-            action = np.argmax(action_probs)
+                action_probs = model(state_tensor, training=False)[0]
+                possible_actions = env.get_action_space()
+                p_a = env.get_action_space()
+                a_p = action_probs
+                action_probs = env.clip_action_probs(possible_actions,action_probs)
+                # Take best action
+                action = np.argmax(action_probs)
 
-            # reset possible actions so that the indices match up
-            env.action_space = ['w','a','s','d'] 
+                # reset possible actions so that the indices match up
+                env.action_space = ['w','a','s','d'] 
 
-        # Decay probability of taking random action
-        epsilon -= epsilon_interval / epsilon_greedy_frames
-        epsilon = max(epsilon, epsilon_min)
+            # Decay probability of taking random action
+            epsilon -= epsilon_interval / epsilon_greedy_frames
+            epsilon = max(epsilon, epsilon_min)
 
-        # Apply the sampled action in our environment
-        try:
-            state_next, reward, done = env.step(action) 
-        except:
+            # Apply the sampled action in our environment
+            try:
+                state_next, reward, done = env.step(action) 
+            except:
+                enablePrint()
+                print(action)
+                print(action_probs)
+                print(p_a)
+                print(a_p)
+                blockPrint()
+                state_next, reward, done = env.step(action) 
+
+            episode_reward += reward
+
+            # Save actions and states in replay buffer
+            action_history.append(action)
+            state_history.append(state)
+            state_next_history.append(state_next)
+            done_history.append(done)
+            rewards_history.append(reward)
+            state = state_next
+
+            # Update every fourth frame and once batch size is over 32
+            if frame_count % update_after_actions == 0 and len(done_history) > batch_size:
+
+                # Get indices of samples for replay buffers
+                indices = np.random.choice(range(len(done_history)), size=batch_size)
+                
+
+                # Using list comprehension to sample from replay buffer
+                state_sample = np.array([state_history[i] for i in indices],copy=True)
+                state_next_sample = np.asarray([state_next_history[i] for i in indices])
+                rewards_sample = [rewards_history[i] for i in indices]
+                action_sample = [action_history[i] for i in indices]
+                done_sample = tf.convert_to_tensor(
+                    [float(done_history[i]) for i in indices]
+                )
+
+                # Build the updated Q-values for the sampled future states
+                future_rewards = model_target.predict(state_next_sample,batch_size=batch_size)
+
+                # Q value = reward + discount factor * expected future reward
+                # print(rewards_sample)
+                # print(np.shape(future_rewards))
+                updated_q_values = rewards_sample + gamma * tf.reduce_max(
+                    future_rewards, axis=1
+                )
+
+                # If final frame set the last value to -1
+                updated_q_values = updated_q_values * (1 - done_sample) - done_sample
+
+                # Create a mask so we only calculate loss on the updated Q-values
+                masks = tf.one_hot(action_sample, 4)
+                # print("action_sample")
+
+                with tf.GradientTape() as tape:
+                    # Train the model on the states and updated Q-values
+                    q_values = model(state_sample)
+                
+                    # print("q_values",q_values[0],"\n","masks",masks.shape)
+                    # Apply the masks to the Q-values to get the Q-value for action taken
+                    q_action = tf.reduce_sum(tf.multiply(q_values, masks), axis=1)
+                    # Calculate loss between new Q-value and old Q-value
+                    loss = loss_function(updated_q_values, q_action)
+
+                # Backpropagation
+                grads = tape.gradient(loss, model.trainable_variables)
+                optimizer.apply_gradients(zip(grads, model.trainable_variables))
+
+            if frame_count % update_target_network == 0:
+                # update the the target network with new weights
+                model_target.set_weights(model.get_weights())
+                weights = np.array(model.get_weights())
+                # np.savetxt('data.csv', weights, delimiter=',')
+                # Log details
+                template = "running reward: {:.2f} at episode {}, frame count {}, total running time {:.2f} minutes, epsilon value {:.2f}"
+                enablePrint()
+                print(template.format(running_reward, episode_count, frame_count, (time.time()-initial_time)/60, epsilon))
+                blockPrint()
+
+            # Limit the state and reward history
+            if len(rewards_history) > max_memory_length:
+                del rewards_history[:1]
+                del state_history[:1]
+                del state_next_history[:1]
+                del action_history[:1]
+                del done_history[:1]
+
+            # extra output for more visuals
+            # if frame_count % 1000 == 0:
+            #     enablePrint()
+            #     print("Frame= {}".format(frame_count))
+            #     blockPrint()
+
+            if done:
+                break
+
+        # Update running reward to check condition for solving
+        episode_reward_history.append(episode_reward)
+        if len(episode_reward_history) > 100:
+            del episode_reward_history[:1]
+        running_reward = np.mean(episode_reward_history)
+
+        episode_count += 1
+
+        if running_reward > 20000:  # Condition to consider the task solved
             enablePrint()
-            print(action)
-            print(action_probs)
-            print(p_a)
-            print(a_p)
+            print("Solved at episode {}!".format(episode_count))
             blockPrint()
-            state_next, reward, done = env.step(action) 
-
-        episode_reward += reward
-
-        # Save actions and states in replay buffer
-        action_history.append(action)
-        state_history.append(state)
-        state_next_history.append(state_next)
-        done_history.append(done)
-        rewards_history.append(reward)
-        state = state_next
-
-        # Update every fourth frame and once batch size is over 32
-        if frame_count % update_after_actions == 0 and len(done_history) > batch_size:
-
-            # Get indices of samples for replay buffers
-            indices = np.random.choice(range(len(done_history)), size=batch_size)
-            
-
-            # Using list comprehension to sample from replay buffer
-            state_sample = np.array([state_history[i] for i in indices],copy=True)
-            state_next_sample = np.asarray([state_next_history[i] for i in indices])
-            rewards_sample = [rewards_history[i] for i in indices]
-            action_sample = [action_history[i] for i in indices]
-            done_sample = tf.convert_to_tensor(
-                [float(done_history[i]) for i in indices]
-            )
-
-            # Build the updated Q-values for the sampled future states
-            future_rewards = model_target.predict(state_next_sample,batch_size=batch_size)
-
-            # Q value = reward + discount factor * expected future reward
-            # print(rewards_sample)
-            # print(np.shape(future_rewards))
-            updated_q_values = rewards_sample + gamma * tf.reduce_max(
-                future_rewards, axis=1
-            )
-
-            # If final frame set the last value to -1
-            updated_q_values = updated_q_values * (1 - done_sample) - done_sample
-
-            # Create a mask so we only calculate loss on the updated Q-values
-            masks = tf.one_hot(action_sample, 4)
-            # print("action_sample")
-
-            with tf.GradientTape() as tape:
-                # Train the model on the states and updated Q-values
-                q_values = model(state_sample)
-               
-                # print("q_values",q_values[0],"\n","masks",masks.shape)
-                # Apply the masks to the Q-values to get the Q-value for action taken
-                q_action = tf.reduce_sum(tf.multiply(q_values, masks), axis=1)
-                # Calculate loss between new Q-value and old Q-value
-                loss = loss_function(updated_q_values, q_action)
-
-            # Backpropagation
-            grads = tape.gradient(loss, model.trainable_variables)
-            optimizer.apply_gradients(zip(grads, model.trainable_variables))
-
-        if frame_count % update_target_network == 0:
-            # update the the target network with new weights
-            model_target.set_weights(model.get_weights())
-            weights = np.array(model.get_weights())
-            # np.savetxt('data.csv', weights, delimiter=',')
-            # Log details
-            template = "running reward: {:.2f} at episode {}, frame count {}, time {}"
-            enablePrint()
-            print(template.format(running_reward, episode_count, frame_count, (time.time()-initial_time)//60))
-            blockPrint()
-
-        # Limit the state and reward history
-        if len(rewards_history) > max_memory_length:
-            del rewards_history[:1]
-            del state_history[:1]
-            del state_next_history[:1]
-            del action_history[:1]
-            del done_history[:1]
-
-        # extra output for more visuals
-        # if frame_count % 1000 == 0:
-        #     enablePrint()
-        #     print("Frame= {}".format(frame_count))
-        #     blockPrint()
-
-        if done:
             break
-
-    # Update running reward to check condition for solving
-    episode_reward_history.append(episode_reward)
-    if len(episode_reward_history) > 100:
-        del episode_reward_history[:1]
-    running_reward = np.mean(episode_reward_history)
-
-    episode_count += 1
-
-    if running_reward > 20000:  # Condition to consider the task solved
-        enablePrint()
-        print("Solved at episode {}!".format(episode_count))
-        blockPrint()
+    # if we get a keyboard exception, break out of the loop and save the resulting model
+    except KeyboardInterrupt: 
         break
 
 save_model(model)
