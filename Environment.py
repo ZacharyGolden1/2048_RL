@@ -1,6 +1,7 @@
 import numpy as np
 import Moves
 import tensorflow as tf
+import math
 
 class environment():
     game_board = Moves.make_board()
@@ -41,6 +42,7 @@ class environment():
         else:
             raise Exception(f"invalid move {move}")
 
+    # resets the current environment back to a new board
     def reset(self):
         self.game_board = Moves.make_board()
         self.action_space = Moves.get_moves(self.game_board)
@@ -48,14 +50,18 @@ class environment():
         self.num_actions = len(self.action_space)
         return self.game_board.flatten()
     
+    # returns the current set of possible actions
     def get_action_space(self):
         return self.action_space
 
+    # returns the number of actions available in the current environment
     def get_actions(self):
         # debug output
         # print("get_actions",self.action_space,self.num_actions,"\n", self.game_board)
         return self.num_actions
 
+    # clip_action_probs removes invalid actions from the set of actions that the model might choose by setting their probability to zero,
+    # since if a move is illegal the probability that it is the best move is zero
     def clip_action_probs(self,possible_actions,action_probs):
         action_probs = Moves.normalize(np.array(action_probs))
         if 'd' not in possible_actions:
@@ -67,6 +73,10 @@ class environment():
         if 'w' not in possible_actions:
             action_probs[0] = 0
         return Moves.normalize(action_probs)
+    
+    # state_to_one_hot returns a one hot representation of the current game board which can be passed to the model
+    def state_to_one_hot(self):
+        return tf.one_hot(math.log(self.game_board.flatten()),2)
 
 def create_environment():
     return environment()

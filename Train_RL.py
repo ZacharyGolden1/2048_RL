@@ -88,7 +88,7 @@ while True:  # Run until solved
             else:
                 # Predict action Q-values
                 # From environment state
-                state_tensor = tf.convert_to_tensor(state)
+                state_tensor = env.state_to_one_hot()
                 state_tensor = tf.expand_dims(state_tensor, 0)
 
                 action_probs = model(state_tensor, training=False)[0]
