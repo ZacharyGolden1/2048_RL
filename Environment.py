@@ -1,7 +1,7 @@
 import numpy as np
 import Moves
 import tensorflow as tf
-import math
+from Disable_Print import *
 
 class environment():
     game_board = Moves.make_board()
@@ -76,7 +76,14 @@ class environment():
     
     # state_to_one_hot returns a one hot representation of the current game board which can be passed to the model
     def state_to_one_hot(self):
-        return tf.one_hot(math.log(self.game_board.flatten()),2)
+        try:
+            return tf.one_hot(np.log2(self.game_board.flatten(),where=self.game_board.flatten()>0))
+        except Exception as e:
+            enablePrint()
+            print(e)
+            print(self.game_board.flatten())
+            print(np.log2(self.game_board.flatten(),where=self.game_board.flatten()>0))
+            blockPrint()
 
 def create_environment():
     return environment()

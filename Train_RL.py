@@ -56,7 +56,8 @@ running_reward = 0
 episode_count = 0
 frame_count = 0
 # Number of frames to take random action and observe output
-epsilon_random_frames = 50000
+epsilon_random_frames = 0 # default was 50000
+
 # Number of frames for exploration
 epsilon_greedy_frames = 1000000.0
 # Maximum replay length
