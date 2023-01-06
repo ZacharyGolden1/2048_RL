@@ -1,6 +1,7 @@
 import numpy as np
 import Moves
 import tensorflow as tf
+import torch
 from Disable_Print import *
 
 class environment():
@@ -74,16 +75,12 @@ class environment():
             action_probs[0] = 0
         return Moves.normalize(action_probs)
     
-    # state_to_one_hot returns a one hot representation of the current game board which can be passed to the model
+    # state_to_one_hot returns a one hot representation of the current game board (or passed in game board) which can be passed to the model
     def state_to_one_hot(self):
-        try:
-            return tf.one_hot(np.log2(self.game_board.flatten(),where=self.game_board.flatten()>0))
-        except Exception as e:
-            enablePrint()
-            print(e)
-            print(self.game_board.flatten())
-            print(np.log2(self.game_board.flatten(),where=self.game_board.flatten()>0))
-            blockPrint()
+        return tf.one_hot(np.log2(self.game_board.flatten(),where=self.game_board.flatten()>0),16)
+
+def state_to_one_hot(state):
+    return tf.one_hot(np.log2(state.flatten(),where=state.flatten()>0),16)
 
 def create_environment():
     return environment()

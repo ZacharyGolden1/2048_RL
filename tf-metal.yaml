@@ -13,6 +13,7 @@ dependencies:
   - conda-forge::scikit-learn
   - conda-forge::scipy
   - conda-forge::ipykernel
+  - conda-forge::torch # this was added after testing finished so if non-functional, remove
 
   ## PyPI packages
   - pip:

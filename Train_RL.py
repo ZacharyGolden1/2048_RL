@@ -93,6 +93,7 @@ while True:  # Run until solved
                 state_tensor = tf.expand_dims(state_tensor, 0)
 
                 action_probs = model(state_tensor, training=False)[0]
+    
                 possible_actions = env.get_action_space()
                 p_a = env.get_action_space()
                 a_p = action_probs
@@ -138,7 +139,7 @@ while True:  # Run until solved
 
                 # Using list comprehension to sample from replay buffer
                 state_sample = np.array([state_history[i] for i in indices],copy=True)
-                state_next_sample = np.asarray([state_next_history[i] for i in indices])
+                state_next_sample = np.asarray([state_to_one_hot(state_next_history[i]) for i in indices])
                 rewards_sample = [rewards_history[i] for i in indices]
                 action_sample = [action_history[i] for i in indices]
                 done_sample = tf.convert_to_tensor(
@@ -146,13 +147,18 @@ while True:  # Run until solved
                 )
 
                 # Build the updated Q-values for the sampled future states
+                enablePrint()
+                print(state_next_sample)
                 future_rewards = model_target.predict(state_next_sample,batch_size=batch_size)
+                enablePrint
+                print(future_rewards)
+                blockPrint()
 
                 # Q value = reward + discount factor * expected future reward
                 # print(rewards_sample)
                 # print(np.shape(future_rewards))
-                updated_q_values = rewards_sample + gamma * tf.reduce_max(
-                    future_rewards, axis=1
+                updated_q_values = rewards_sample + gamma * tf.reduce_max(tf.reduce_max(
+                    future_rewards, axis=1), axis=1
                 )
 
                 # If final frame set the last value to -1
