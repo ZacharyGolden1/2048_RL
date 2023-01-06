@@ -17,7 +17,7 @@ initial_time = time.time()
 
 gamma = 0.99  # Discount factor for past rewards
 epsilon = 1.0  # Epsilon greedy parameter
-epsilon_min = 0.1  # Minimum epsilon greedy parameter
+epsilon_min = 0.02  # Minimum epsilon greedy parameter
 epsilon_max = 1.0  # Maximum epsilon greedy parameter
 epsilon_interval = (
     epsilon_max - epsilon_min
@@ -97,7 +97,7 @@ while True:  # Run until solved
                 possible_actions = env.get_action_space()
                 p_a = env.get_action_space()
                 a_p = action_probs
-                
+
                 action_probs = env.clip_action_probs(possible_actions,action_probs)
                 # Take best action
                 action = np.argmax(action_probs)
