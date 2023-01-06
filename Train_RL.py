@@ -147,12 +147,7 @@ while True:  # Run until solved
                 )
 
                 # Build the updated Q-values for the sampled future states
-                enablePrint()
-                print(state_next_sample)
                 future_rewards = model_target.predict(state_next_sample,batch_size=batch_size)
-                enablePrint
-                print(future_rewards)
-                blockPrint()
 
                 # Q value = reward + discount factor * expected future reward
                 # print(rewards_sample)
