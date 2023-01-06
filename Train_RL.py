@@ -97,6 +97,7 @@ while True:  # Run until solved
                 possible_actions = env.get_action_space()
                 p_a = env.get_action_space()
                 a_p = action_probs
+                
                 action_probs = env.clip_action_probs(possible_actions,action_probs)
                 # Take best action
                 action = np.argmax(action_probs)
@@ -138,7 +139,7 @@ while True:  # Run until solved
                 
 
                 # Using list comprehension to sample from replay buffer
-                state_sample = np.array([state_history[i] for i in indices],copy=True)
+                state_sample = np.array([state_to_one_hot(state_history[i]) for i in indices],copy=True)
                 state_next_sample = np.asarray([state_to_one_hot(state_next_history[i]) for i in indices])
                 rewards_sample = [rewards_history[i] for i in indices]
                 action_sample = [action_history[i] for i in indices]
@@ -152,8 +153,8 @@ while True:  # Run until solved
                 # Q value = reward + discount factor * expected future reward
                 # print(rewards_sample)
                 # print(np.shape(future_rewards))
-                updated_q_values = rewards_sample + gamma * tf.reduce_max(tf.reduce_max(
-                    future_rewards, axis=1), axis=1
+                updated_q_values = rewards_sample + gamma * tf.reduce_max(
+                    future_rewards, axis=1
                 )
 
                 # If final frame set the last value to -1
