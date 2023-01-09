@@ -105,7 +105,7 @@ def run_game(playing, game_board, score, moves):
         elif param.gamemode == "ai":
             if not param.simulation:
                 print_board(game_board,score)
-                input("Press Any Key")
+                input("Press Enter")
             state_tensor = state_to_one_hot(game_board)
             state_tensor = tf.expand_dims(state_tensor, 0)
             action_probs = model(state_tensor, training=False)[0]
@@ -120,6 +120,7 @@ def run_game(playing, game_board, score, moves):
 
             move = moves[action]
             if is_valid(move,game_board):
+                print("\nMove:",move)
                 if move == "s":
                     game_board, score = down(game_board,score)
                 elif move == "w":
