@@ -1,5 +1,6 @@
 import random
 import numpy as np
+import tensorflow as tf
 
 # create board:
 def make_board():
@@ -250,8 +251,4 @@ def game_over(board):
 
 # normalize function for the returned model values
 def normalize(arr):
-    norm_arr = np.zeros(4) 
-    for i in range(len(arr)):
-        temp = (arr[i] + 1)/np.sum(arr)
-        norm_arr[i] = temp
-    return norm_arr
+    return tf.keras.utils.normalize(arr)[0]

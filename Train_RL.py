@@ -182,7 +182,6 @@ while True:  # Run until solved
                 # update the the target network with new weights
                 model_target.set_weights(model.get_weights())
                 weights = np.array(model.get_weights())
-                # np.savetxt('data.csv', weights, delimiter=',')
                 # Log details
                 template = "running reward: {:.2f} at episode {}, frame count {}, total running time {:.2f} minutes, epsilon value {:.2f}"
                 enablePrint()
@@ -196,12 +195,6 @@ while True:  # Run until solved
                 del state_next_history[:1]
                 del action_history[:1]
                 del done_history[:1]
-
-            # extra output for more visuals
-            # if frame_count % 1000 == 0:
-            #     enablePrint()
-            #     print("Frame= {}".format(frame_count))
-            #     blockPrint()
 
             if done:
                 break
