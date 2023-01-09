@@ -11,7 +11,8 @@ def create_q_model():
     inputs = layers.Input(16*16)
 
     layer1 = layers.Dense(512, activation="relu")(inputs)
-    action = layers.Dense(4, activation="softmax")(layer1)
+    layer2 = layers.Dense(256, activation="relu")(layer1)
+    action = layers.Dense(4, activation="softmax")(layer2)
 
     return keras.Model(inputs=inputs, outputs=action, )
 
