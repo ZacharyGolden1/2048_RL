@@ -1,5 +1,6 @@
 import random
 import numpy as np
+import tensorflow as tf
 
 # create board:
 def make_board():
@@ -30,7 +31,7 @@ def get_random_empty_square(empty_squares):
 
 # moves
 def up(board,score):
-    # get rid of all zeroes in the board
+    # get rid of all Zeros in the board
     new_board = dict()
     for col in range(4):
         new_board[col] = []
@@ -48,7 +49,7 @@ def up(board,score):
                 new_board[col].pop(i+1)
             i+=1
 
-    # add back zeroes:
+    # add back Zeros:
     for col in range(4):
         while len(new_board[col]) < 4:
             new_board[col].append(0)
@@ -112,7 +113,7 @@ def down(board,score):
     return final_board, score
 
 def left(board,score):
-    # get rid of all zeroes in the board
+    # get rid of all zeros in the board
     new_board = dict()
     for row in range(4):
         new_board[row] = []
@@ -130,7 +131,7 @@ def left(board,score):
                 new_board[row].pop(i+1)
             i+=1
 
-    # add back zeroes:
+    # add back zeros:
     for row in range(4):
         while len(new_board[row]) < 4:
             new_board[row].append(0)
@@ -153,7 +154,7 @@ def left(board,score):
     return final_board, score
 
 def right(board,score):
-    # get rid of all Nones in the board
+    # get rid of all Zeros in the board
     new_board = dict()
     for row in range(4):
         new_board[row] = []
@@ -171,7 +172,7 @@ def right(board,score):
                 new_board[row].pop(i-1)
             i-=1
 
-    # add back Zeroes:
+    # add back Zeros:
     for row in range(4):
         while len(new_board[row]) < 4:
             new_board[row].insert(0, 0)
@@ -250,8 +251,4 @@ def game_over(board):
 
 # normalize function for the returned model values
 def normalize(arr):
-    norm_arr = np.zeros(4) 
-    for i in range(len(arr)):
-        temp = (arr[i] + 1)/np.sum(arr)
-        norm_arr[i] = temp
-    return norm_arr
+    return tf.keras.utils.normalize(arr)[0]
