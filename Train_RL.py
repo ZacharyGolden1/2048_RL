@@ -12,6 +12,7 @@ print("Starting model training")
 # Disable Printing So we avoid the 1/1 [=======.. output
 blockPrint()
 initial_time = time.time()
+save_time = initial_time + 3600
 
 # Configuration paramaters for the whole setup
 
@@ -212,6 +213,12 @@ while True:  # Run until solved
             print("Solved at episode {}!".format(episode_count))
             blockPrint()
             break
+
+        # for google collab, save the model every hour
+        if (initial_time - time.time())/3600 > save_time:
+            save_model(model)
+            save_time += 3600
+
     # if we get a keyboard exception, break out of the loop and save the resulting model
     except KeyboardInterrupt: 
         break

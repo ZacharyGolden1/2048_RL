@@ -61,7 +61,8 @@ class environment():
         # print("get_actions",self.action_space,self.num_actions,"\n", self.game_board)
         return self.num_actions
 
-    # clip_action_probs removes invalid actions from the set of actions that the model might choose by setting their probability to zero,
+    # clip_action_probs removes invalid actions from the set of actions that the 
+    # model might choose by setting their probability to zero,
     # since if a move is illegal the probability that it is the best move is zero
     def clip_action_probs(self,possible_actions,action_probs):
         action_probs = Moves.normalize(np.array(action_probs))
@@ -75,7 +76,8 @@ class environment():
             action_probs[0] = 0
         return Moves.normalize(action_probs)
     
-    # state_to_one_hot returns a one hot representation of the current game board (or passed in game board) which can be passed to the model
+    # state_to_one_hot returns a one hot representation of the current game board 
+    # (or passed in game board) which can be passed to the model
     def state_to_one_hot(self):
         return tf.reshape(tf.one_hot(np.log2(self.game_board.flatten(),where=self.game_board.flatten()>0),16),[-1])
 
