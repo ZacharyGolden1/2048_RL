@@ -180,10 +180,7 @@ while True:  # Run until solved
             if frame_count % update_target_network == 0:
                 # update the the target network with new weights
                 model_target.set_weights(model.get_weights())
-                enablePrint()
-                print(type(model.get_weights()))
-                blockPrint()
-                weights = np.array(model.get_weights())
+                # weights = np.array(model.get_weights())
                 # np.savetxt('data.csv', weights, delimiter=',')
                 # Log details
                 template = "running reward: {:.2f} at episode {}, frame count {}, total running time {:.2f} minutes, epsilon value {:.2f}"
