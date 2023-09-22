@@ -19,7 +19,9 @@ scores = []
 
 # runs a single instance of a game:
 def run_game(playing, game_board, score, moves):
+    vBoard = visualBoard()
     while playing:
+        vBoard.update(game_board, score)
         # check to see if the game is still playable:
         if param.verbose:
             if game_over(game_board):
@@ -27,6 +29,7 @@ def run_game(playing, game_board, score, moves):
                 print("gameover, score:", score)
                 scores.append(score)
                 playing = False
+                vBoard.root.quit()
         else:
             if game_over(game_board):
                 scores.append(score)

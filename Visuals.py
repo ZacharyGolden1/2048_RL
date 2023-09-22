@@ -74,6 +74,8 @@ class visualBoard:
                     self.visual_board[i][j].config(text=str(board[i][j]),
                     bg=bg_color[str(board[i][j])],
                     fg=color[str(board[i][j])])
+        self.root.update_idletasks()
+        self.root.update()
 
 # print_board will print out the state of the board and score passed to it to stdout
 # intended for if you want to use the terminal text based display
@@ -89,10 +91,9 @@ def print_board(board,score):
     print("score:",score)
     print("\n")
 
-
-vboard = visualBoard()
-print("here")
-board = np.zeros((4,4))
-board[1,3] = 4
-vboard.update(board,40)
-vboard.root.mainloop()
+def demo_board():
+    vboard = visualBoard()
+    print("Running the visual demo:")
+    board = np.zeros((4,4))
+    board[1,3] = 4
+    vboard.update(board,40)
