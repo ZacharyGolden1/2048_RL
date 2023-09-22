@@ -7,6 +7,7 @@ from Environment import *
 from Parameters import *
 from Model import *
 from Disable_Print import *
+import time
 
 print("Starting model training")
 # Disable Printing So we avoid the 1/1 [=======.. output
@@ -69,6 +70,10 @@ update_target_network = 10000
 # Using huber loss for stability
 loss_function = keras.losses.Huber()
 
+# understanding the time it takes to train and run the game:
+train_time = 0
+game_time = 0
+
 while True:  # Run until solved
     try: # exception handler to allow for saving on keyboard inturrupt
         state = env.reset()
@@ -110,7 +115,9 @@ while True:  # Run until solved
 
             # Apply the sampled action in our environment
             try:
+                temp = time.time()
                 state_next, reward, done = env.step(action) 
+                game_time += time.time() - temp
             except:
                 enablePrint()
                 print(action)
@@ -174,8 +181,10 @@ while True:  # Run until solved
                     loss = loss_function(updated_q_values, q_action)
 
                 # Backpropagation
+                temp = time.time()
                 grads = tape.gradient(loss, model.trainable_variables)
                 optimizer.apply_gradients(zip(grads, model.trainable_variables))
+                train_time += time.time() - temp
 
             if frame_count % update_target_network == 0:
                 # update the the target network with new weights
@@ -186,6 +195,7 @@ while True:  # Run until solved
                 template = "running reward: {:.2f} at episode {}, frame count {}, total running time {:.2f} minutes, epsilon value {:.2f}"
                 enablePrint()
                 print(template.format(running_reward, episode_count, frame_count, (time.time()-initial_time)/60, epsilon))
+                print("game_time:",game_time,"train_time:",train_time)
                 blockPrint()
 
             # Limit the state and reward history
