@@ -7,5 +7,5 @@ num_simulations = 1000
 gamemode = "down-right-left-up"
 
 # Model Training 
-model_save_path = "models/"
+model_save_path = "../models/"
 default_model = ""

@@ -32,7 +32,6 @@ env = create_environment()
 # make a action.
 if default_model == "":
     model = create_q_model()
-
     # Build a target model for the prediction of future rewards.
     # The weights of a target model get updated every 10000 steps thus when the
     # loss between the Q-values is calculated the target Q-value is stable.
@@ -43,7 +42,7 @@ else:
 
 # In the Deepmind paper they use RMSProp however then Adam optimizer
 # improves training time
-optimizer = keras.optimizers.Adam(learning_rate=0.00025, clipnorm=1.0)
+optimizer = keras.optimizers.legacy.Adam(learning_rate=0.00025, clipnorm=1.0)
 
 # Experience replay buffers
 action_history = []
@@ -181,6 +180,9 @@ while True:  # Run until solved
             if frame_count % update_target_network == 0:
                 # update the the target network with new weights
                 model_target.set_weights(model.get_weights())
+                enablePrint()
+                print(type(model.get_weights()))
+                blockPrint()
                 weights = np.array(model.get_weights())
                 # np.savetxt('data.csv', weights, delimiter=',')
                 # Log details
