@@ -73,6 +73,9 @@ loss_function = keras.losses.Huber()
 # understanding the time it takes to train and run the game:
 train_time = 0
 game_time = 0
+predict_q_values_time = 0
+save_to_replay_buffer_time = 0
+update_q_values_time = 0
 
 while True:  # Run until solved
     try: # exception handler to allow for saving on keyboard inturrupt
@@ -93,6 +96,7 @@ while True:  # Run until solved
             else:
                 # Predict action Q-values
                 # From environment state
+                temp = time.time()
                 state_tensor = env.state_to_one_hot()
                 state_tensor = tf.expand_dims(state_tensor, 0)
 
@@ -108,6 +112,7 @@ while True:  # Run until solved
 
                 # reset possible actions so that the indices match up
                 env.action_space = ['w','a','s','d'] 
+                predict_q_values_time = time.time() - temp
 
             # Decay probability of taking random action
             epsilon -= epsilon_interval / epsilon_greedy_frames
@@ -130,15 +135,18 @@ while True:  # Run until solved
             episode_reward += reward
 
             # Save actions and states in replay buffer
+            temp = time.time()
             action_history.append(action)
             state_history.append(state)
             state_next_history.append(state_next)
             done_history.append(done)
             rewards_history.append(reward)
             state = state_next
+            save_to_replay_buffer_time = time.time() - temp
 
             # Update every fourth frame and once batch size is over 32
             if frame_count % update_after_actions == 0 and len(done_history) > batch_size:
+                temp = time.time()
 
                 # Get indices of samples for replay buffers
                 indices = np.random.choice(range(len(done_history)), size=batch_size)
@@ -179,6 +187,7 @@ while True:  # Run until solved
                     q_action = tf.reduce_sum(tf.multiply(q_values, masks), axis=1)
                     # Calculate loss between new Q-value and old Q-value
                     loss = loss_function(updated_q_values, q_action)
+                update_q_values_time = time.time() - temp
 
                 # Backpropagation
                 temp = time.time()
@@ -195,7 +204,10 @@ while True:  # Run until solved
                 template = "running reward: {:.2f} at episode {}, frame count {}, total running time {:.2f} minutes, epsilon value {:.2f}"
                 enablePrint()
                 print(template.format(running_reward, episode_count, frame_count, (time.time()-initial_time)/60, epsilon))
-                print("game_time:",game_time,"train_time:",train_time)
+                print("game_time:",game_time,"train_time:",train_time,
+                      "predict_q_values_time:",predict_q_values_time,
+                      "save_to_replay_buffer_time:", save_to_replay_buffer_time,
+                      "update_q_values_time", update_q_values_time)
                 blockPrint()
 
             # Limit the state and reward history
