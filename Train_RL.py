@@ -8,10 +8,11 @@ from Parameters import *
 from Model import *
 from Disable_Print import *
 
-print("Starting model training")
+print("Starting model training\n")
 # Disable Printing So we avoid the 1/1 [=======.. output
 blockPrint()
 initial_time = time.time()
+save_time = initial_time + 3600
 
 # Configuration paramaters for the whole setup
 
@@ -23,7 +24,7 @@ epsilon_interval = (
     epsilon_max - epsilon_min
 )  # Rate at which to reduce chance of random action being taken
 batch_size = 32  # Size of batch taken from replay buffer
-max_steps_per_episode = 10000
+max_steps_per_episode = 1000
 
 # Warp the frames, grey scale, stake four frame and scale to smaller ratio
 env = create_environment()
@@ -182,7 +183,6 @@ while True:  # Run until solved
                 # update the the target network with new weights
                 model_target.set_weights(model.get_weights())
                 weights = np.array(model.get_weights())
-                # np.savetxt('data.csv', weights, delimiter=',')
                 # Log details
                 template = "running reward: {:.2f} at episode {}, frame count {}, total running time {:.2f} minutes, epsilon value {:.2f}"
                 enablePrint()
@@ -196,12 +196,6 @@ while True:  # Run until solved
                 del state_next_history[:1]
                 del action_history[:1]
                 del done_history[:1]
-
-            # extra output for more visuals
-            # if frame_count % 1000 == 0:
-            #     enablePrint()
-            #     print("Frame= {}".format(frame_count))
-            #     blockPrint()
 
             if done:
                 break
@@ -219,6 +213,12 @@ while True:  # Run until solved
             print("Solved at episode {}!".format(episode_count))
             blockPrint()
             break
+
+        # for google collab, save the model every hour
+        if (initial_time - time.time())/3600 > save_time:
+            save_model(model)
+            save_time += 3600
+
     # if we get a keyboard exception, break out of the loop and save the resulting model
     except KeyboardInterrupt: 
         break

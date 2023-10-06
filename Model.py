@@ -19,4 +19,4 @@ def save_model(model,path=model_save_path):
     model.save(path+str(datetime.datetime.now()))
 
 def load_model(path=default_model):
-    return keras.models.load_model(path)
+    return keras.models.load_model(path,compile=False)

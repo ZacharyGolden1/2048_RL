@@ -6,6 +6,8 @@ import Parameters as param
 
 from Visuals import *
 from Moves import *
+from Model import *
+from Environment import *
 
 playing = True
 score = 0
@@ -16,6 +18,16 @@ game_board = make_board()
 
 # game play loop
 scores = []
+
+# get AI model:
+if default_model == "":
+    print("No model loaded")
+else:
+    model = load_model()
+    model_target = load_model()
+
+# create environment
+env = environment()
 
 # runs a single instance of a game:
 def run_game(playing, game_board, score, moves):
@@ -91,7 +103,31 @@ def run_game(playing, game_board, score, moves):
                 game_board, score = up(game_board,score)
 
         elif param.gamemode == "ai":
-            pass
+            if not param.simulation:
+                print_board(game_board,score)
+                input("Press Enter")
+            state_tensor = state_to_one_hot(game_board)
+            state_tensor = tf.expand_dims(state_tensor, 0)
+            action_probs = model(state_tensor, training=False)[0]
+            possible_actions = Moves.get_moves(game_board)
+            p_a = env.get_action_space()
+            a_p = action_probs
+
+            action_probs = env.clip_action_probs(possible_actions,action_probs)
+
+            # Take best action
+            action = np.argmax(action_probs)
+
+            move = moves[action]
+            if is_valid(move,game_board):
+                if move == "s":
+                    game_board, score = down(game_board,score)
+                elif move == "w":
+                    game_board, score = up(game_board,score)
+                elif move == "a":
+                    game_board, score = left(game_board,score)
+                elif move == "d":
+                    game_board, score = right(game_board,score)
 
 
 ###### for simulating games #####
