@@ -8,7 +8,7 @@ from Parameters import *
 from Model import *
 from Disable_Print import *
 
-print("Starting model training")
+print("Starting model training\n")
 # Disable Printing So we avoid the 1/1 [=======.. output
 blockPrint()
 initial_time = time.time()
@@ -24,7 +24,7 @@ epsilon_interval = (
     epsilon_max - epsilon_min
 )  # Rate at which to reduce chance of random action being taken
 batch_size = 32  # Size of batch taken from replay buffer
-max_steps_per_episode = 10000
+max_steps_per_episode = 1000
 
 # Warp the frames, grey scale, stake four frame and scale to smaller ratio
 env = create_environment()
