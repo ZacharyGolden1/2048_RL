@@ -120,7 +120,6 @@ def run_game(playing, game_board, score, moves):
 
             move = moves[action]
             if is_valid(move,game_board):
-                print("\nMove:",move)
                 if move == "s":
                     game_board, score = down(game_board,score)
                 elif move == "w":
