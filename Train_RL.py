@@ -44,7 +44,7 @@ else:
 
 # In the Deepmind paper they use RMSProp however then Adam optimizer
 # improves training time
-optimizer = keras.optimizers.Adam(learning_rate=0.00025, clipnorm=1.0)
+optimizer = keras.optimizers.legacy.Adam(learning_rate=0.00025, clipnorm=1.0)
 
 # Experience replay buffers
 action_history = []
@@ -182,7 +182,6 @@ while True:  # Run until solved
             if frame_count % update_target_network == 0:
                 # update the the target network with new weights
                 model_target.set_weights(model.get_weights())
-                weights = np.array(model.get_weights())
                 # Log details
                 template = "running reward: {:.2f} at episode {}, frame count {}, total running time {:.2f} minutes, epsilon value {:.2f}"
                 enablePrint()

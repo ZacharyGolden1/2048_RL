@@ -29,6 +29,9 @@ else:
 # create environment
 env = environment()
 
+# make a list of simmed games to eventually save 
+simmed_games = np.array([game_board])
+
 # runs a single instance of a game:
 def run_game(playing, game_board, score, moves):
     while playing:
@@ -103,9 +106,21 @@ def run_game(playing, game_board, score, moves):
                 game_board, score = up(game_board,score)
 
         elif param.gamemode == "ai":
+
             if not param.simulation:
                 print_board(game_board,score)
                 input("Press Enter")
+            
+            if param.simulation and param.make_simd_games and \
+                score >= param.target_score:
+                board = game_board
+            
+            if param.simulation and param.make_simd_games and \
+                score >= param.target_score + 400:
+                global simmed_games
+                simmed_games = np.vstack((simmed_games,[board]))
+                break
+
             state_tensor = state_to_one_hot(game_board)
             state_tensor = tf.expand_dims(state_tensor, 0)
             action_probs = model(state_tensor, training=False)[0]
@@ -133,12 +148,21 @@ def run_game(playing, game_board, score, moves):
 ###### for simulating games #####
 
 t = time.time()
-if param.simulation == True: # if simulation in Parameters.py is True then run num_simulations games
+if param.simulation and not param.make_simd_games: # if simulation in Parameters.py is True then run num_simulations games
     for i in range(param.num_simulations):
         playing = True
         game_board = make_board()
         score = 0
         run_game(playing, game_board, score, moves)
+
+elif param.simulation and param.make_simd_games:
+    while len(simmed_games) < param.num_simulations:
+        playing = True
+        game_board = make_board()
+        score = 0
+        run_game(playing, game_board, score, moves)
+    np.save("simmed_games_at_score_2000", simmed_games)
+
 else: # otherwise run a single game
     run_game(playing, game_board, score, moves)
 

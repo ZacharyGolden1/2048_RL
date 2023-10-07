@@ -2,10 +2,17 @@ import numpy as np
 import Moves
 import tensorflow as tf
 import torch
+import random
+import Parameters as param
 from Disable_Print import *
 
+boards = np.load("/Users/golden/Desktop/Projects/2048_RL/2048_RL/simmed_games_at_score_2000/simmed_games_at_score_2000.npy")
+
 class environment():
-    game_board = Moves.make_board()
+    if param.start_from_sim:
+        game_board = boards[random.randint(1,len(boards))]
+    else:
+        game_board = Moves.make_board()
     action_space = Moves.get_moves(game_board)
     score = 0
     num_actions = len(action_space)
@@ -45,7 +52,10 @@ class environment():
 
     # resets the current environment back to a new board
     def reset(self):
-        self.game_board = Moves.make_board()
+        if param.start_from_sim:
+            self.game_board = boards[random.randint(1,len(boards))]
+        else:
+            self.game_board = Moves.make_board()
         self.action_space = Moves.get_moves(self.game_board)
         self.score = 0
         self.num_actions = len(self.action_space)
