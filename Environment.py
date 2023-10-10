@@ -6,11 +6,11 @@ import random
 import Parameters as param
 from Disable_Print import *
 
-boards = np.load("/Users/golden/Desktop/Projects/2048_RL/2048_RL/simmed_games_at_score_2000/simmed_games_at_score_2000.npy")
+boards = np.load("/Users/golden/Desktop/Projects/2048_RL/2048_RL/simmed_games/simmed_games_at_score_2750.npy")
 
 class environment():
     if param.start_from_sim:
-        game_board = boards[random.randint(1,len(boards))]
+        game_board = boards[random.randint(1,len(boards)-1)]
     else:
         game_board = Moves.make_board()
     action_space = Moves.get_moves(game_board)
@@ -53,7 +53,7 @@ class environment():
     # resets the current environment back to a new board
     def reset(self):
         if param.start_from_sim:
-            self.game_board = boards[random.randint(1,len(boards))]
+            self.game_board = boards[random.randint(1,len(boards)-1)]
         else:
             self.game_board = Moves.make_board()
         self.action_space = Moves.get_moves(self.game_board)

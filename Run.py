@@ -116,7 +116,7 @@ def run_game(playing, game_board, score, moves):
                 board = game_board
             
             if param.simulation and param.make_simd_games and \
-                score >= param.target_score + 400:
+                score >= param.target_score + 700 and Moves.get_moves(board) != []:
                 global simmed_games
                 simmed_games = np.vstack((simmed_games,[board]))
                 break
@@ -161,7 +161,7 @@ elif param.simulation and param.make_simd_games:
         game_board = make_board()
         score = 0
         run_game(playing, game_board, score, moves)
-    np.save("simmed_games_at_score_2000", simmed_games)
+    np.save("simmed_games_at_score_2750", simmed_games)
 
 else: # otherwise run a single game
     run_game(playing, game_board, score, moves)

@@ -8,7 +8,7 @@ from Parameters import *
 from Model import *
 from Disable_Print import *
 
-print("Starting model training\n")
+print("Starting model training...\n")
 # Disable Printing So we avoid the 1/1 [=======.. output
 blockPrint()
 initial_time = time.time()
@@ -32,6 +32,9 @@ env = create_environment()
 # The first model makes the predictions for Q-values which are used to
 # make a action.
 if default_model == "":
+    enablePrint()
+    print("creating new model")
+    blockPrint()
     model = create_q_model()
 
     # Build a target model for the prediction of future rewards.
@@ -39,6 +42,9 @@ if default_model == "":
     # loss between the Q-values is calculated the target Q-value is stable.
     model_target = create_q_model()
 else:
+    enablePrint()
+    print("loading existing model")
+    blockPrint()
     model = load_model()
     model_target = load_model()
 
